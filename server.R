@@ -5,7 +5,7 @@ library(snapshot)
 
 shinyServer(function(input, output, session) {
 
-  # sim_analysis() tab
+  # sim_analysis() tab ----------------------------------------------------------------------------
   df <- reactive({
     if (input$DM_profile == "Hernquist"){
       SimSpin::sim_analysis(filename = input$sim_file$datapath,
@@ -55,9 +55,15 @@ shinyServer(function(input, output, session) {
 
     isolate({
 
-      if (input$rmax/input$rbin < (2 * input$rmax / 100)){
-        lout = input$rbin/4
-      } else {lout = input$rbin}
+      if (input$rmax >= input$rbin){            # if the max radius is greater than the number of bins 
+        if (input$rmax / input$rbin < 5){       # if the spacing between bins is less than 2kpc
+          lout = input$rmax / 5
+        } else {lout = input$rbin}
+      } else if (input$rbin > input$rmax){
+        if (input$rmax / input$rbin < 5){
+          lout = input$rmax / 5
+        } else {lout = input$rbin}
+      }
 
       if (input$bin_type == "r" | input$bin_type == "cr"){
         magicaxis::magplot(df()$part_data$x, df()$part_data$y, pch=".",
@@ -224,8 +230,7 @@ shinyServer(function(input, output, session) {
     })
   }) # writing beware if the analytic potential is not specified and no DM particles exist in the simulation
 
-  # build_datacube() tab
-
+  # build_datacube() tab --------------------------------------------------------------------------
   dc <- reactive({
     if (input$blur == "FALSE"){
       SimSpin::build_datacube(filename = input$sim_file_2$datapath,
@@ -336,9 +341,8 @@ shinyServer(function(input, output, session) {
       }
     })
   }, sanitize.colnames.function = function(x) x) # kinematics table
-
-  # find_lambda() tab
-
+  
+  # find_lambda() tab -----------------------------------------------------------------------------
   fl <- reactive({
 
     if (input$blur_2 == "FALSE" && input$measure_type == "Fit"){
