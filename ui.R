@@ -31,7 +31,7 @@ shinyUI(navbarPage(
                          placeholder = "No file selected"),
                checkboxGroupInput("ptype", label = "Particle types:",
                                   choiceNames = c("Dark Matter", "Disc", "Bulge"),
-                                  choiceValues = c(2, 3, 4), selected = c(3,4)),
+                                  choiceValues = c(1, 2, 3), selected = c(2,3)),
                selectInput("DM_profile", label = "Dark Matter Profile:", choices = c("Hernquist", "NFW", "None")),
                # only show this panel if DM_profile == Hernquist
                conditionalPanel(
@@ -88,19 +88,24 @@ shinyUI(navbarPage(
                          placeholder = "No file selected"),
                checkboxGroupInput("ptype_2", label = "Particle types:",
                                   choiceNames = c("Dark Matter", "Disc", "Bulge"),
-                                  choiceValues = c(2, 3, 4), selected = c(3, 4)),
+                                  choiceValues = c(1, 2, 3), selected = c(2,3)),
                numericInput("r200", label = "Virial radius:", value = 200),
                sliderInput("z", label = "Redshift:", min = 0.01, max = 0.1, value = 0.06),
-               numericInput("fov", label = "IFU field of view:", value = 15),
-               selectInput("ap_shape", label = "Aperture shape:", choices = c("circular", "square", "hexagonal")),
-               numericInput("central_wvl", label = HTML("Central filter wavelength / &#8491; :"), value = 4800),
-               numericInput("lsf_fwhm", label = "Line spread function:", value = 2.65),
-               sliderInput("pixel_sscale", label = "Spaxel scale / '' :", min = 0.25, max = 2, value = 0.5, step = 0.01),
-               sliderInput("pixel_vscale", label = HTML("Voxel scale / &#8491; :"), min = 0.5, max = 2, value = 1.04, step = 0.01),
+               selectInput("survey", label = "Survey:", choices = c("SAMI", "MaNGA", "CALIFA", "Specified")),
+               # only show this panel if survey == "Specified"
+               conditionalPanel(
+                 condition = "input.survey == 'Specified'",
+                 numericInput("fov", label = "IFU field of view:", value = 15),
+                 selectInput("ap_shape", label = "Aperture shape:", choices = c("circular", "square", "hexagonal")),
+                 numericInput("central_wvl", label = HTML("Central filter wavelength / &#8491; :"), value = 4800),
+                 numericInput("lsf_fwhm", label = "Line spread function:", value = 2.65),
+                 sliderInput("pixel_sscale", label = "Spaxel scale / '' :", min = 0.25, max = 2, value = 0.5, step = 0.01),
+                 sliderInput("pixel_vscale", label = HTML("Voxel scale / &#8491; :"), min = 0.5, max = 2, value = 1.04, step = 0.01),
+                 numericInput("threshold", label = "Magnitude limit:", value = 25)
+               ),
                sliderInput("inc_deg", label = "Inclination:", min = 0, max = 90, value = 90, step = 1),
                numericInput("m2l_disc", label = "Disc mass-to-light ratio:", value = 2),
                numericInput("m2l_bulge", label = "Bulge mass-to-light ratio:", value = 1),
-               numericInput("threshold", label = "Magnitude limit:", value = 25),
                checkboxInput("blur", label = "Blur?", value = FALSE),
                # only show this panel if DM_profile == NFW
                conditionalPanel(
@@ -132,19 +137,24 @@ shinyUI(navbarPage(
                          placeholder = "No file selected"),
                checkboxGroupInput("ptype_3", label = "Particle types:",
                                   choiceNames = c("Dark Matter", "Disc", "Bulge"),
-                                  choiceValues = c(2, 3, 4), selected = c(3, 4)),
+                                  choiceValues = c(1, 2, 3), selected = c(2,3)),
                numericInput("r200_2", label = "Virial radius:", value = 200),
                sliderInput("z_2", label = "Redshift:", min = 0.01, max = 0.1, value = 0.06),
-               numericInput("fov_2", label = "IFU field of view:", value = 15),
-               selectInput("ap_shape_2", label = "Aperture shape:", choices = c("circular", "square", "hexagonal")),
-               numericInput("central_wvl_2", label = HTML("Central filter wavelength / &#8491; :"), value = 4800),
-               numericInput("lsf_fwhm_2", label = "Line spread function:", value = 2.65),
-               sliderInput("pixel_sscale_2", label = "Spaxel scale / '' :", min = 0.25, max = 2, value = 0.5, step = 0.01),
-               sliderInput("pixel_vscale_2", label = HTML("Voxel scale / &#8491; :"), min = 0.5, max = 2, value = 1.04, step = 0.01),
+               selectInput("survey_2", label = "Survey:", choices = c("SAMI", "MaNGA", "CALIFA", "Specified")),
+               # only show this panel if survey == "Specified"
+               conditionalPanel(
+                 condition = "input.survey_2 == 'Specified'",
+                 numericInput("fov_2", label = "IFU field of view:", value = 15),
+                 selectInput("ap_shape_2", label = "Aperture shape:", choices = c("circular", "square", "hexagonal")),
+                 numericInput("central_wvl_2", label = HTML("Central filter wavelength / &#8491; :"), value = 4800),
+                 numericInput("lsf_fwhm_2", label = "Line spread function:", value = 2.65),
+                 sliderInput("pixel_sscale_2", label = "Spaxel scale / '' :", min = 0.25, max = 2, value = 0.5, step = 0.01),
+                 sliderInput("pixel_vscale_2", label = HTML("Voxel scale / &#8491; :"), min = 0.5, max = 2, value = 1.04, step = 0.01),
+                 numericInput("threshold_2", label = "Magnitude limit:", value = 25)
+               ),
                sliderInput("inc_deg_2", label = "Inclination:", min = 0, max = 90, value = 90, step = 1),
                numericInput("m2l_disc_2", label = "Disc mass-to-light ratio:", value = 2),
                numericInput("m2l_bulge_2", label = "Bulge mass-to-light ratio:", value = 1),
-               numericInput("threshold_2", label = "Magnitude limit:", value = 25),
                checkboxInput("blur_2", label = "Blur?", value = FALSE),
                # only show this panel if DM_profile == NFW
                conditionalPanel(
