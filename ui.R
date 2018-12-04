@@ -112,7 +112,7 @@ shinyUI(navbarPage(
                conditionalPanel(
                  condition = "input.blur == true",
                  selectInput("psf", label = "PSF shape:", choices = c("Moffat", "Gaussian")),
-                 sliderInput("fwhm", label = "FWHM:", min = 0, max = 5, value = 0.5)
+                 sliderInput("fwhm", label = "FWHM:", min = 0, max = 5, value = 0.5, step = 0.5)
                ),
                actionButton("submit_2", label = "Go!")
                ),
@@ -161,7 +161,7 @@ shinyUI(navbarPage(
                conditionalPanel(
                  condition = "input.blur_2 == true",
                  selectInput("psf_2", label = "PSF shape:", choices = c("Moffat", "Gaussian")),
-                 sliderInput("fwhm_2", label = "FWHM:", min = 0, max = 5, value = 0.5, step = 0.1)
+                 sliderInput("fwhm_2", label = "FWHM:", min = 0, max = 5, value = 0.5, step = 0.5)
                ),
                selectInput("measure_type", label = "Measurment radius details:", choices = c("Fit", "Specified", "Fixed")),
                conditionalPanel(
@@ -170,7 +170,7 @@ shinyUI(navbarPage(
                ),
                conditionalPanel(
                  condition = "input.measure_type == 'Specified'",
-                 sliderInput("fac", label = HTML("Factor / R<sub>eff</sub>:"), min = 0, max = 5, value = 1, step = 0.1),
+                 sliderInput("fract", label = HTML("Fraction of mass included:"), min = 0, max = 1, value = 0.5, step = 0.1),
                  numericInput("ar_a", label = "Semi-major, a / kpc", value = 2),
                  numericInput("ar_b", label = "Semi-minor, b / kpc", value = 1)
                ),

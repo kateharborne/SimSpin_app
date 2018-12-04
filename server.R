@@ -8,33 +8,35 @@ shinyServer(function(input, output, session) {
   # sim_analysis() tab ----------------------------------------------------------------------------
   df <- reactive({
     if (input$DM_profile == "Hernquist"){
-      SimSpin::sim_analysis(filename = input$sim_file$datapath,
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file$datapath,
+                                      ptype = input$ptype)
+      SimSpin::sim_analysis(simdata = galaxy_file,
                             bin_type = input$bin_type,
                             rmax = input$rmax,
                             rbin = input$rbin,
-                            ptype = input$ptype,
                             DM_profile = list("profile" = "Hernquist", "DM_mass" = input$DM_mass, "DM_a" = input$DM_a))
     } else if (input$DM_profile == "NFW"){
-      SimSpin::sim_analysis(filename = input$sim_file$datapath,
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file$datapath,
+                                      ptype = input$ptype)
+      SimSpin::sim_analysis(simdata = galaxy_file,
                             bin_type = input$bin_type,
                             rmax = input$rmax,
                             rbin = input$rbin,
-                            ptype = input$ptype,
                             DM_profile = list("profile"="NFW", "DM_vm" = input$DM_vm, "DM_a" = input$DM_a, "DM_rhof" = input$DM_rhof))
     } else if (input$DM_profile == "None") {
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file$datapath,
+                                      ptype = input$ptype)
       validate(
-        need(try(SimSpin::sim_analysis(filename = input$sim_file$datapath,
+        need(try(SimSpin::sim_analysis(simdata = galaxy_file,
                                        bin_type = input$bin_type,
                                        rmax = input$rmax,
                                        rbin = input$rbin,
-                                       ptype = input$ptype,
                                        DM_profile = NA)), "DMpart Error: There are no dark matter particles in this model. Describe an analytic potential to calculate the total kinematic profile correctly.")
       )
-      SimSpin::sim_analysis(filename = input$sim_file$datapath,
+      SimSpin::sim_analysis(simdata = galaxy_file,
                             bin_type = input$bin_type,
                             rmax = input$rmax,
                             rbin = input$rbin,
-                            ptype = input$ptype,
                             DM_profile = NA)
 
     }
@@ -87,10 +89,13 @@ shinyServer(function(input, output, session) {
       return()
     }
     isolate({
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file$datapath,
+                                      ptype = input$ptype)
+      ptypes = names(galaxy_file)
       p_dat = tags$b("This analysis contains:")
-      DM_num = sprintf("%i Dark matter particles", df()$head_data$Npart[2])
-      D_num  = sprintf("%i Disc particles", df()$head_data$Npart[3])
-      B_num  = sprintf("%i Bulge particles", df()$head_data$Npart[4])
+      DM_num = sprintf("%i Dark matter particles", if("PartType0" %in% ptypes){nrow(galaxy_file$PartType0$Part)}else{0})
+      D_num  = sprintf("%i Disc particles", if("PartType2" %in% ptypes){nrow(galaxy_file$PartType2$Part)}else{0})
+      B_num  = sprintf("%i Bulge particles", if("PartType3" %in% ptypes){nrow(galaxy_file$PartType3$Part)}else{0})
       u_choice = sprintf("You have chosen to divide this into <b>%i</b> '%s' bin(s) out to a maximum radius of <b>%i</b>.", input$rbin, input$bin_type, input$rmax)
       if (input$DM_profile == "Hernquist"){
         anpot_num = sprintf("You have supplied an <b><u>Hernquist</u></b> analytic potential with <u>total mass</u> of <b>%.3f</b> and <u>halo scale radius</u> of <b>%.1f</b>.", input$DM_mass, input$DM_a)
@@ -234,8 +239,11 @@ shinyServer(function(input, output, session) {
   dc <- reactive({
     if (input$blur == "FALSE"){
       if (input$survey == "SAMI"){
-        SimSpin::build_datacube(filename = input$sim_file_2$datapath,
-                                ptype = input$ptype_2,
+        galaxy_file = SimSpin::sim_data(filename = input$sim_file_2$datapath,
+                                        ptype = input$ptype_2,
+                                        m2l_disc = input$m2l_disc,
+                                        m2l_bulge = input$m2l_bulge)
+        SimSpin::build_datacube(simdata = galaxy_file,
                                 r200 = input$r200,
                                 z = input$z,
                                 fov = 15,
@@ -245,12 +253,13 @@ shinyServer(function(input, output, session) {
                                 pixel_sscale = 0.5,
                                 pixel_vscale = 1.04,
                                 inc_deg = input$inc_deg,
-                                m2l_disc = input$m2l_disc,
-                                m2l_bulge = input$m2l_bulge,
                                 threshold = 25)
       } else if (input$survey == "MaNGA"){
-        SimSpin::build_datacube(filename = input$sim_file_2$datapath,
-                                ptype = input$ptype_2,
+        galaxy_file = SimSpin::sim_data(filename = input$sim_file_2$datapath,
+                                        ptype = input$ptype_2,
+                                        m2l_disc = input$m2l_disc,
+                                        m2l_bulge = input$m2l_bulge)
+        SimSpin::build_datacube(simdata = galaxy_file,
                                 r200 = input$r200,
                                 z = input$z,
                                 fov = 22,
@@ -260,12 +269,13 @@ shinyServer(function(input, output, session) {
                                 pixel_sscale = 0.25,
                                 pixel_vscale = 1.2,
                                 inc_deg = input$inc_deg,
-                                m2l_disc = input$m2l_disc,
-                                m2l_bulge = input$m2l_bulge,
                                 threshold = 25)
       } else if (input$survey == "CALIFA"){
-        SimSpin::build_datacube(filename = input$sim_file_2$datapath,
-                                ptype = input$ptype_2,
+        galaxy_file = SimSpin::sim_data(filename = input$sim_file_2$datapath,
+                                        ptype = input$ptype_2,
+                                        m2l_disc = input$m2l_disc,
+                                        m2l_bulge = input$m2l_bulge)
+        SimSpin::build_datacube(simdata = galaxy_file,
                                 r200 = input$r200,
                                 z = input$z,
                                 fov = 30,
@@ -275,12 +285,13 @@ shinyServer(function(input, output, session) {
                                 pixel_sscale = 1,
                                 pixel_vscale = 2,
                                 inc_deg = input$inc_deg,
-                                m2l_disc = input$m2l_disc,
-                                m2l_bulge = input$m2l_bulge,
                                 threshold = 25)
       } else if (input$survey == "Specified"){
-        SimSpin::build_datacube(filename = input$sim_file_2$datapath,
-                                ptype = input$ptype_2,
+        galaxy_file = SimSpin::sim_data(filename = input$sim_file_2$datapath,
+                                        ptype = input$ptype_2,
+                                        m2l_disc = input$m2l_disc,
+                                        m2l_bulge = input$m2l_bulge)
+        SimSpin::build_datacube(simdata = galaxy_file,
                                 r200 = input$r200,
                                 z = input$z,
                                 fov = input$fov,
@@ -290,16 +301,17 @@ shinyServer(function(input, output, session) {
                                 pixel_sscale = input$pixel_sscale,
                                 pixel_vscale = input$pixel_vscale,
                                 inc_deg = input$inc_deg,
-                                m2l_disc = input$m2l_disc,
-                                m2l_bulge = input$m2l_bulge,
                                 threshold = input$threshold)
       }
 
       
     } else if (input$blur == "TRUE"){
       if (input$survey == "SAMI"){
-        SimSpin::build_datacube(filename = input$sim_file_2$datapath,
-                                ptype = input$ptype_2,
+        galaxy_file = SimSpin::sim_data(filename = input$sim_file_2$datapath,
+                                        ptype = input$ptype_2,
+                                        m2l_disc = input$m2l_disc,
+                                        m2l_bulge = input$m2l_bulge)
+        SimSpin::build_datacube(simdata = galaxy_file,
                                 r200 = input$r200,
                                 z = input$z,
                                 fov = 15,
@@ -309,13 +321,14 @@ shinyServer(function(input, output, session) {
                                 pixel_sscale = 0.5,
                                 pixel_vscale = 1.04,
                                 inc_deg = input$inc_deg,
-                                m2l_disc = input$m2l_disc,
-                                m2l_bulge = input$m2l_bulge,
                                 threshold = 25,
                                 blur = list("psf" = input$psf, "fwhm" = input$fwhm))
       } else if (input$survey == "MaNGA"){
-        SimSpin::build_datacube(filename = input$sim_file_2$datapath,
-                                ptype = input$ptype_2,
+        galaxy_file = SimSpin::sim_data(filename = input$sim_file_2$datapath,
+                                        ptype = input$ptype_2,
+                                        m2l_disc = input$m2l_disc,
+                                        m2l_bulge = input$m2l_bulge)
+        SimSpin::build_datacube(simdata = galaxy_file,
                                 r200 = input$r200,
                                 z = input$z,
                                 fov = 22,
@@ -330,8 +343,11 @@ shinyServer(function(input, output, session) {
                                 threshold = 25,
                                 blur = list("psf" = input$psf, "fwhm" = input$fwhm))
       } else if (input$survey == "CALIFA"){
-        SimSpin::build_datacube(filename = input$sim_file_2$datapath,
-                                ptype = input$ptype_2,
+        galaxy_file = SimSpin::sim_data(filename = input$sim_file_2$datapath,
+                                        ptype = input$ptype_2,
+                                        m2l_disc = input$m2l_disc,
+                                        m2l_bulge = input$m2l_bulge)
+        SimSpin::build_datacube(simdata = galaxy_file,
                                 r200 = input$r200,
                                 z = input$z,
                                 fov = 30,
@@ -346,8 +362,11 @@ shinyServer(function(input, output, session) {
                                 threshold = 25,
                                 blur = list("psf" = input$psf, "fwhm" = input$fwhm))
       } else if (input$survey == "Specified"){
-        SimSpin::build_datacube(filename = input$sim_file_2$datapath,
-                                ptype = input$ptype_2,
+        galaxy_file = SimSpin::sim_data(filename = input$sim_file_2$datapath,
+                                        ptype = input$ptype_2,
+                                        m2l_disc = input$m2l_disc,
+                                        m2l_bulge = input$m2l_bulge)
+        SimSpin::build_datacube(simdata = galaxy_file,
                                 r200 = input$r200,
                                 z = input$z,
                                 fov = input$fov,
@@ -444,462 +463,486 @@ shinyServer(function(input, output, session) {
   fl <- reactive({
 
     if (input$blur_2 == "FALSE" && input$measure_type == "Fit" && input$survey_2 == "SAMI"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                             ptype = input$ptype_3,
-                             r200 = input$r200_2,
-                             z = input$z_2,
-                             fov = 15,
-                             ap_shape = "circular",
-                             central_wvl = 4800,
-                             lsf_fwhm = 2.65,
-                             pixel_sscale = 0.5,
-                             pixel_vscale = 1.04,
-                             inc_deg = input$inc_deg_2,
-                             m2l_disc = input$m2l_disc_2,
-                             m2l_bulge = input$m2l_bulge_2,
-                             threshold = 25,
-                             measure_type = list("type"="fit", "fac"=input$fac),
-                             IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 15,
+                           ap_shape = "circular",
+                           central_wvl = 4800,
+                           lsf_fwhm = 2.65,
+                           pixel_sscale = 0.5,
+                           pixel_vscale = 1.04,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 25,
+                           measure_type = list("type"="fit", "fac"=input$fac),
+                           IFU_plot = FALSE)
     } else if (input$blur_2 == "FALSE" && input$measure_type == "Fit" && input$survey_2 == "MaNGA"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = 22,
-                                ap_shape = "hexagonal",
-                                central_wvl = 4950,
-                                lsf_fwhm = 2.8,
-                                pixel_sscale = 0.25,
-                                pixel_vscale = 1.2,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = 30,
-                                measure_type = list("type"="fit", "fac"=input$fac),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 22,
+                           ap_shape = "hexagonal",
+                           central_wvl = 4950,
+                           lsf_fwhm = 2.8,
+                           pixel_sscale = 0.25,
+                           pixel_vscale = 1.2,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 30,
+                           measure_type = list("type"="fit", "fac"=input$fac),
+                           IFU_plot = FALSE)
     } else if (input$blur_2 == "FALSE" && input$measure_type == "Fit" && input$survey_2 == "CALIFA"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = 30,
-                                ap_shape = "hexagonal",
-                                central_wvl = 4200,
-                                lsf_fwhm = 5.65,
-                                pixel_sscale = 1,
-                                pixel_vscale = 2,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = 25,
-                                measure_type = list("type"="fit", "fac"=input$fac),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 30,
+                           ap_shape = "hexagonal",
+                           central_wvl = 4200,
+                           lsf_fwhm = 5.65,
+                           pixel_sscale = 1,
+                           pixel_vscale = 2,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 25,
+                           measure_type = list("type"="fit", "fac"=input$fac),
+                           IFU_plot = FALSE)
     } else if (input$blur_2 == "FALSE" && input$measure_type == "Fit" && input$survey_2 == "Specified"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = input$fov_2,
-                                ap_shape = input$ap_shape_2,
-                                central_wvl = input$central_wvl_2,
-                                lsf_fwhm = input$lsf_fwhm_2,
-                                pixel_sscale = input$pixel_sscale_2,
-                                pixel_vscale = input$pixel_vscale_2,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = input$threshold_2,
-                                measure_type = list("type"="fit", "fac"=input$fac),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = input$fov_2,
+                           ap_shape = input$ap_shape_2,
+                           central_wvl = input$central_wvl_2,
+                           lsf_fwhm = input$lsf_fwhm_2,
+                           pixel_sscale = input$pixel_sscale_2,
+                           pixel_vscale = input$pixel_vscale_2,
+                           inc_deg = input$inc_deg_2,
+                           threshold = input$threshold_2,
+                           measure_type = list("type"="fit", "fac"=input$fac),
+                           IFU_plot = FALSE)
       
     } else if (input$blur_2 == "FALSE" && input$measure_type == "Specified" && input$survey_2 == "SAMI"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = 15,
-                                ap_shape = "circular",
-                                central_wvl = 4800,
-                                lsf_fwhm = 2.65,
-                                pixel_sscale = 0.5,
-                                pixel_vscale = 1.04,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = 25,
-                                measure_type = list("type"="specified",
-                                                    "fac"=input$fac,
-                                                    "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 15,
+                           ap_shape = "circular",
+                           central_wvl = 4800,
+                           lsf_fwhm = 2.65,
+                           pixel_sscale = 0.5,
+                           pixel_vscale = 1.04,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 25,
+                           measure_type = list("type"="specified",
+                                               "fract"=input$fract,
+                                               "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
+                           IFU_plot = FALSE)
     } else if (input$blur_2 == "FALSE" && input$measure_type == "Specified" && input$survey_2 == "MaNGA"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = 22,
-                                ap_shape = "hexagonal",
-                                central_wvl = 4950,
-                                lsf_fwhm = 2.8,
-                                pixel_sscale = 0.25,
-                                pixel_vscale = 1.2,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = 30,
-                                measure_type = list("type"="specified",
-                                                    "fac"=input$fac,
-                                                    "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 22,
+                           ap_shape = "hexagonal",
+                           central_wvl = 4950,
+                           lsf_fwhm = 2.8,
+                           pixel_sscale = 0.25,
+                           pixel_vscale = 1.2,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 30,
+                           measure_type = list("type"="specified",
+                                               "fract"=input$fract,
+                                               "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
+                           IFU_plot = FALSE)
     } else if (input$blur_2 == "FALSE" && input$measure_type == "Specified" && input$survey_2 == "CALIFA"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = 30,
-                                ap_shape = "hexagonal",
-                                central_wvl = 4200,
-                                lsf_fwhm = 5.65,
-                                pixel_sscale = 1,
-                                pixel_vscale = 2,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = 25,
-                                measure_type = list("type"="specified",
-                                                    "fac"=input$fac,
-                                                    "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 30,
+                           ap_shape = "hexagonal",
+                           central_wvl = 4200,
+                           lsf_fwhm = 5.65,
+                           pixel_sscale = 1,
+                           pixel_vscale = 2,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 25,
+                           measure_type = list("type"="specified",
+                                               "fract"=input$fract,
+                                               "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
+                           IFU_plot = FALSE)
     } else if (input$blur_2 == "FALSE" && input$measure_type == "Specified" && input$survey_2 == "Specified"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = input$fov_2,
-                                ap_shape = input$ap_shape_2,
-                                central_wvl = input$central_wvl_2,
-                                lsf_fwhm = input$lsf_fwhm_2,
-                                pixel_sscale = input$pixel_sscale_2,
-                                pixel_vscale = input$pixel_vscale_2,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = input$threshold_2,
-                                measure_type = list("type"="specified",
-                                                    "fac"=input$fac,
-                                                    "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = input$fov_2,
+                           ap_shape = input$ap_shape_2,
+                           central_wvl = input$central_wvl_2,
+                           lsf_fwhm = input$lsf_fwhm_2,
+                           pixel_sscale = input$pixel_sscale_2,
+                           pixel_vscale = input$pixel_vscale_2,
+                           inc_deg = input$inc_deg_2,
+                           threshold = input$threshold_2,
+                           measure_type = list("type"="specified",
+                                               "fract"=input$fract,
+                                               "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
+                           IFU_plot = FALSE)
 
     } else if (input$blur_2 == "FALSE" && input$measure_type == "Fixed" && input$survey_2 == "SAMI"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = 15,
-                                ap_shape = "circular",
-                                central_wvl = 4800,
-                                lsf_fwhm = 2.65,
-                                pixel_sscale = 0.5,
-                                pixel_vscale = 1.04,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = 25,
-                                measure_type = list("type"="fixed",
-                                                    "fac"=input$fac,
-                                                    "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+     SimSpin::find_lambda(simdata = galaxy_file,
+                          r200 = input$r200_2,
+                          z = input$z_2,
+                          fov = 15,
+                          ap_shape = "circular",
+                          central_wvl = 4800,
+                          lsf_fwhm = 2.65,
+                          pixel_sscale = 0.5,
+                          pixel_vscale = 1.04,
+                          inc_deg = input$inc_deg_2,
+                          threshold = 25,
+                          measure_type = list("type"="fixed",
+                                              "fac"=input$fac,
+                                              "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
+                          IFU_plot = FALSE)
     } else if (input$blur_2 == "FALSE" && input$measure_type == "Fixed" && input$survey_2 == "MaNGA"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = 22,
-                                ap_shape = "hexagonal",
-                                central_wvl = 4950,
-                                lsf_fwhm = 2.8,
-                                pixel_sscale = 0.25,
-                                pixel_vscale = 1.2,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = 30,
-                                measure_type = list("type"="fixed",
-                                                    "fac"=input$fac,
-                                                    "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 22,
+                           ap_shape = "hexagonal",
+                           central_wvl = 4950,
+                           lsf_fwhm = 2.8,
+                           pixel_sscale = 0.25,
+                           pixel_vscale = 1.2,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 30,
+                           measure_type = list("type"="fixed",
+                                               "fac"=input$fac,
+                                               "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
+                           IFU_plot = FALSE)
     } else if (input$blur_2 == "FALSE" && input$measure_type == "Fixed" && input$survey_2 == "CALIFA"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = 30,
-                                ap_shape = "hexagonal",
-                                central_wvl = 4200,
-                                lsf_fwhm = 5.65,
-                                pixel_sscale = 1,
-                                pixel_vscale = 2,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = 25,
-                                measure_type = list("type"="fixed",
-                                                    "fac"=input$fac,
-                                                    "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 30,
+                           ap_shape = "hexagonal",
+                           central_wvl = 4200,
+                           lsf_fwhm = 5.65,
+                           pixel_sscale = 1,
+                           pixel_vscale = 2,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 25,
+                           measure_type = list("type"="fixed",
+                                               "fac"=input$fac,
+                                               "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
+                           IFU_plot = FALSE)
     } else if (input$blur_2 == "FALSE" && input$measure_type == "Fixed" && input$survey_2 == "Specified"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = input$fov_2,
-                                ap_shape = input$ap_shape_2,
-                                central_wvl = input$central_wvl_2,
-                                lsf_fwhm = input$lsf_fwhm_2,
-                                pixel_sscale = input$pixel_sscale_2,
-                                pixel_vscale = input$pixel_vscale_2,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = input$threshold_2,
-                                measure_type = list("type"="fixed",
-                                                    "fac"=input$fac,
-                                                    "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = input$fov_2,
+                           ap_shape = input$ap_shape_2,
+                           central_wvl = input$central_wvl_2,
+                           lsf_fwhm = input$lsf_fwhm_2,
+                           pixel_sscale = input$pixel_sscale_2,
+                           pixel_vscale = input$pixel_vscale_2,
+                           inc_deg = input$inc_deg_2,
+                           threshold = input$threshold_2,
+                           measure_type = list("type"="fixed",
+                                               "fac"=input$fac,
+                                               "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
+                           IFU_plot = FALSE)
 
     } else if (input$blur_2 == "TRUE" && input$measure_type == "Fit" && input$survey_2 == "SAMI"){
-      SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = 15,
-                                ap_shape = "circular",
-                                central_wvl = 4800,
-                                lsf_fwhm = 2.65,
-                                pixel_sscale = 0.5,
-                                pixel_vscale = 1.04,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = 25,
-                                measure_type = list("type"="fit", "fac"=input$fac),
-                                blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 15,
+                           ap_shape = "circular",
+                           central_wvl = 4800,
+                           lsf_fwhm = 2.65,
+                           pixel_sscale = 0.5,
+                           pixel_vscale = 1.04,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 25,
+                           measure_type = list("type"="fit", "fac"=input$fac),
+                           blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
+                           IFU_plot = FALSE)
     } else if (input$blur_2 == "TRUE" && input$measure_type == "Fit" && input$survey_2 == "MaNGA"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = 22,
-                                ap_shape = "hexagonal",
-                                central_wvl = 4950,
-                                lsf_fwhm = 2.8,
-                                pixel_sscale = 0.25,
-                                pixel_vscale = 1.2,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = 30,
-                                measure_type = list("type"="fit", "fac"=input$fac),
-                                blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 22,
+                           ap_shape = "hexagonal",
+                           central_wvl = 4950,
+                           lsf_fwhm = 2.8,
+                           pixel_sscale = 0.25,
+                           pixel_vscale = 1.2,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 30,
+                           measure_type = list("type"="fit", "fac"=input$fac),
+                           blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
+                           IFU_plot = FALSE)
     } else if (input$blur_2 == "TRUE" && input$measure_type == "Fit" && input$survey_2 == "CALIFA"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = 30,
-                                ap_shape = "hexagonal",
-                                central_wvl = 4200,
-                                lsf_fwhm = 5.65,
-                                pixel_sscale = 1,
-                                pixel_vscale = 2,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = 25,
-                                measure_type = list("type"="fit", "fac"=input$fac),
-                                blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 30,
+                           ap_shape = "hexagonal",
+                           central_wvl = 4200,
+                           lsf_fwhm = 5.65,
+                           pixel_sscale = 1,
+                           pixel_vscale = 2,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 25,
+                           measure_type = list("type"="fit", "fac"=input$fac),
+                           blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
+                           IFU_plot = FALSE)
     } else if (input$blur_2 == "TRUE" && input$measure_type == "Fit" && input$survey_2 == "Specified"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = input$fov_2,
-                                ap_shape = input$ap_shape_2,
-                                central_wvl = input$central_wvl_2,
-                                lsf_fwhm = input$lsf_fwhm_2,
-                                pixel_sscale = input$pixel_sscale_2,
-                                pixel_vscale = input$pixel_vscale_2,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = input$threshold_2,
-                                measure_type = list("type"="fit", "fac"=input$fac),
-                                blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = input$fov_2,
+                           ap_shape = input$ap_shape_2,
+                           central_wvl = input$central_wvl_2,
+                           lsf_fwhm = input$lsf_fwhm_2,
+                           pixel_sscale = input$pixel_sscale_2,
+                           pixel_vscale = input$pixel_vscale_2,
+                           inc_deg = input$inc_deg_2,
+                           threshold = input$threshold_2,
+                           measure_type = list("type"="fit", "fac"=input$fac),
+                           blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
+                           IFU_plot = FALSE)
       
     } else if (input$blur_2 == "TRUE" && input$measure_type == "Specified" && input$survey_2 == "SAMI"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = 15,
-                                ap_shape = "circular",
-                                central_wvl = 4800,
-                                lsf_fwhm = 2.65,
-                                pixel_sscale = 0.5,
-                                pixel_vscale = 1.04,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = 25,
-                                measure_type = list("type"="specified",
-                                                    "fac"=input$fac,
-                                                    "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
-                                blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 15,
+                           ap_shape = "circular",
+                           central_wvl = 4800,
+                           lsf_fwhm = 2.65,
+                           pixel_sscale = 0.5,
+                           pixel_vscale = 1.04,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 25,
+                           measure_type = list("type"="specified",
+                                               "fract"=input$fract,
+                                               "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
+                           blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
+                           IFU_plot = FALSE)
     } else if (input$blur_2 == "TRUE" && input$measure_type == "Specified" && input$survey_2 == "MaNGA"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = 22,
-                                ap_shape = "hexagonal",
-                                central_wvl = 4950,
-                                lsf_fwhm = 2.8,
-                                pixel_sscale = 0.25,
-                                pixel_vscale = 1.2,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = 30,
-                                measure_type = list("type"="specified",
-                                                    "fac"=input$fac,
-                                                    "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
-                                blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 22,
+                           ap_shape = "hexagonal",
+                           central_wvl = 4950,
+                           lsf_fwhm = 2.8,
+                           pixel_sscale = 0.25,
+                           pixel_vscale = 1.2,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 30,
+                           measure_type = list("type"="specified",
+                                               "fract"=input$fract,
+                                               "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
+                           blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
+                           IFU_plot = FALSE)
     } else if (input$blur_2 == "TRUE" && input$measure_type == "Specified" && input$survey_2 == "CALIFA"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = 30,
-                                ap_shape = "hexagonal",
-                                central_wvl = 4200,
-                                lsf_fwhm = 5.65,
-                                pixel_sscale = 1,
-                                pixel_vscale = 2,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = 25,
-                                measure_type = list("type"="specified",
-                                                    "fac"=input$fac,
-                                                    "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
-                                blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 30,
+                           ap_shape = "hexagonal",
+                           central_wvl = 4200,
+                           lsf_fwhm = 5.65,
+                           pixel_sscale = 1,
+                           pixel_vscale = 2,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 25,
+                           measure_type = list("type"="specified",
+                                               "fract"=input$fract,
+                                               "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
+                           blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
+                           IFU_plot = FALSE)
     } else if (input$blur_2 == "TRUE" && input$measure_type == "Specified" && input$survey_2 == "Specified"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = input$fov_2,
-                                ap_shape = input$ap_shape_2,
-                                central_wvl = input$central_wvl_2,
-                                lsf_fwhm = input$lsf_fwhm_2,
-                                pixel_sscale = input$pixel_sscale_2,
-                                pixel_vscale = input$pixel_vscale_2,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = input$threshold_2,
-                                measure_type = list("type"="specified",
-                                                    "fac"=input$fac,
-                                                    "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
-                                blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = input$fov_2,
+                           ap_shape = input$ap_shape_2,
+                           central_wvl = input$central_wvl_2,
+                           lsf_fwhm = input$lsf_fwhm_2,
+                           pixel_sscale = input$pixel_sscale_2,
+                           pixel_vscale = input$pixel_vscale_2,
+                           inc_deg = input$inc_deg_2,
+                           threshold = input$threshold_2,
+                           measure_type = list("type"="specified",
+                                               "fract"=input$fract,
+                                               "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
+                           blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
+                           IFU_plot = FALSE)
 
     } else if (input$blur_2 == "TRUE" && input$measure_type == "Fixed" && input$survey_2 == "SAMI"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = 15,
-                                ap_shape = "circular",
-                                central_wvl = 4800,
-                                lsf_fwhm = 2.65,
-                                pixel_sscale = 0.5,
-                                pixel_vscale = 1.04,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = 25,
-                                measure_type = list("type"="fixed",
-                                                    "fac"=input$fac,
-                                                    "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
-                                blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 15,
+                           ap_shape = "circular",
+                           central_wvl = 4800,
+                           lsf_fwhm = 2.65,
+                           pixel_sscale = 0.5,
+                           pixel_vscale = 1.04,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 25,
+                           measure_type = list("type"="fixed",
+                                               "fac"=input$fac,
+                                               "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
+                           blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
+                           IFU_plot = FALSE)
     } else if (input$blur_2 == "TRUE" && input$measure_type == "Fixed" && input$survey_2 == "MaNGA"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = 22,
-                                ap_shape = "hexagonal",
-                                central_wvl = 4950,
-                                lsf_fwhm = 2.8,
-                                pixel_sscale = 0.25,
-                                pixel_vscale = 1.2,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = 30,
-                                measure_type = list("type"="fixed",
-                                                    "fac"=input$fac,
-                                                    "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
-                                blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 22,
+                           ap_shape = "hexagonal",
+                           central_wvl = 4950,
+                           lsf_fwhm = 2.8,
+                           pixel_sscale = 0.25,
+                           pixel_vscale = 1.2,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 30,
+                           measure_type = list("type"="fixed",
+                                               "fac"=input$fac,
+                                               "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
+                           blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
+                           IFU_plot = FALSE)
     } else if (input$blur_2 == "TRUE" && input$measure_type == "Fixed" && input$survey_2 == "CALIFA"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = 30,
-                                ap_shape = "hexagonal",
-                                central_wvl = 4200,
-                                lsf_fwhm = 5.65,
-                                pixel_sscale = 1,
-                                pixel_vscale = 2,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = 25,
-                                measure_type = list("type"="fixed",
-                                                    "fac"=input$fac,
-                                                    "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
-                                blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 30,
+                           ap_shape = "hexagonal",
+                           central_wvl = 4200,
+                           lsf_fwhm = 5.65,
+                           pixel_sscale = 1,
+                           pixel_vscale = 2,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 25,
+                           measure_type = list("type"="fixed",
+                                               "fac"=input$fac,
+                                               "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
+                           blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
+                           IFU_plot = FALSE)
     } else if (input$blur_2 == "TRUE" && input$measure_type == "Fixed" && input$survey_2 == "Specified"){
-        SimSpin::find_lambda(filename = input$sim_file_3$datapath,
-                                ptype = input$ptype_3,
-                                r200 = input$r200_2,
-                                z = input$z_2,
-                                fov = input$fov_2,
-                                ap_shape = input$ap_shape_2,
-                                central_wvl = input$central_wvl_2,
-                                lsf_fwhm = input$lsf_fwhm_2,
-                                pixel_sscale = input$pixel_sscale_2,
-                                pixel_vscale = input$pixel_vscale_2,
-                                inc_deg = input$inc_deg_2,
-                                m2l_disc = input$m2l_disc_2,
-                                m2l_bulge = input$m2l_bulge_2,
-                                threshold = input$threshold_2,
-                                measure_type = list("type"="fixed",
-                                                    "fac"=input$fac,
-                                                    "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
-                                blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
-                                IFU_plot = FALSE)
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                      ptype = input$ptype_3,
+                                      m2l_disc = input$m2l_disc_2,
+                                      m2l_bulge = input$m2l_bulge_2)
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = input$fov_2,
+                           ap_shape = input$ap_shape_2,
+                           central_wvl = input$central_wvl_2,
+                           lsf_fwhm = input$lsf_fwhm_2,
+                           pixel_sscale = input$pixel_sscale_2,
+                           pixel_vscale = input$pixel_vscale_2,
+                           inc_deg = input$inc_deg_2,
+                           threshold = input$threshold_2,
+                           measure_type = list("type"="fixed",
+                                               "fac"=input$fac,
+                                               "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
+                           blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
+                           IFU_plot = FALSE)
     }
   })
 
@@ -912,16 +955,20 @@ shinyServer(function(input, output, session) {
       return()
     } # only create plot once "submit_3" button is pressed
     isolate({
-
-      ap_region = array(data = 1, dim = dim(fl()$appregion))
-      ap_region[fl()$appregion == 0] = NA
-      counts_img     = fl()$counts_img * ap_region
-      reff_ellipse   = fl()$reff_elli
+      appregion      = fl()$appregion
+      appregion[appregion == 0] = NA
+      counts_img     = fl()$counts_img * appregion
+      axis_data      = fl()$axis_ratio
+      sbin = dim(counts_img)[1]
+      sbinsize = fl()$sbinsize
+      xcen = (sbin/2)
+      ycen = (sbin/2)
 
       par(mfcol=c(1,1), family="sans", font=2, cex=1.15)
       magicaxis::magimage(asinh(counts_img), xaxt="n", yaxt="n", ann=FALSE, col=rev(colorRampPalette(RColorBrewer::brewer.pal(9, "RdYlBu")[1:5])(100)), magmap=FALSE, zlim = range(c(asinh(fl()$counts_img))), family="sans", font=2, cex.lab=2)
       fields::image.plot(legend.only = TRUE, zlim = range(c(fl()$counts_img)), col = rev(colorRampPalette(RColorBrewer::brewer.pal(9, "RdYlBu")[1:5])(100)), horizontal = TRUE, family="sans", font=2, legend.lab = expression("flux, 10"^{-16} * "erg s"^{-1} * "cm"^{-2} * "arcsec"^{-2}), cex.lab=2)
-      lines(reff_ellipse[,1], reff_ellipse[,2], col = "red", lwd = 5)
+      plotrix::draw.ellipse(x = xcen, y = ycen, a = axis_data$a_kpc / sbinsize, b = axis_data$b_kpc / sbinsize, angle = axis_data$angle - 90, border="red", lwd = 5, deg=TRUE)
+      
     })
   }, height=reactive(ifelse(!is.null(input$innerWidth),input$innerWidth*3/5,0)))
   # plotting the flux images
@@ -935,17 +982,20 @@ shinyServer(function(input, output, session) {
       return()
     } # only create plot once "submit_3" button is pressed
     isolate({
-
-      ap_region = array(data = 1, dim = dim(fl()$appregion))
-      ap_region[fl()$appregion == 0] = NA
-      velocity_img   = fl()$velocity_img * ap_region
-      reff_ellipse   = fl()$reff_elli
+      appregion      = fl()$appregion
+      appregion[appregion == 0] = NA
+      velocity_img   = fl()$velocity_img * appregion
+      axis_data      = fl()$axis_ratio
+      sbin = dim(velocity_img)[1]
+      sbinsize = fl()$sbinsize
+      xcen = (sbin/2)
+      ycen = (sbin/2)
 
       par(family="sans", font=2, cex=1.15)
       magicaxis::magimage(velocity_img,  xaxt="n", yaxt="n", ann=FALSE, col=rev(colorRampPalette(RColorBrewer::brewer.pal(9, "RdYlBu"))(100)), magmap=FALSE, scale="linear")
       fields::image.plot(legend.only = TRUE, zlim = range(c(fl()$velocity_img)), col = rev(colorRampPalette(RColorBrewer::brewer.pal(9, "RdYlBu"))(100)), horizontal = TRUE, family="sans", font=2, legend.lab = expression("velocity"[LOS] * ", km s"^{-1}), cex.lab=2)
-      lines(reff_ellipse[,1], reff_ellipse[,2], col = "red", lwd = 5)
-
+      plotrix::draw.ellipse(x = xcen, y = ycen, a = axis_data$a_kpc / sbinsize, b = axis_data$b_kpc / sbinsize, angle = axis_data$angle - 90, border="red", lwd = 5, deg=TRUE)
+      
     })
   }, height=reactive(ifelse(!is.null(input$innerWidth),input$innerWidth*3/5,0)))
   # plotting the velocity image
@@ -960,16 +1010,20 @@ shinyServer(function(input, output, session) {
     } # only create plot once "submit_3" button is pressed
     isolate({
 
-      ap_region = array(data = 1, dim = dim(fl()$appregion))
-      ap_region[fl()$appregion == 0] = NA
-      dispersion_img = fl()$dispersion_img * ap_region
-      reff_ellipse   = fl()$reff_elli
-
+      appregion      = fl()$appregion
+      appregion[appregion == 0] = NA
+      dispersion_img = fl()$dispersion_img * appregion
+      axis_data      = fl()$axis_ratio
+      sbin = dim(dispersion_img)[1]
+      sbinsize = fl()$sbinsize
+      xcen = (sbin/2)
+      ycen = (sbin/2)
+      
       par(family="sans", font=2, cex=1.15)
       magicaxis::magimage(dispersion_img,  xaxt="n", yaxt="n", ann=FALSE, col=rev(colorRampPalette(RColorBrewer::brewer.pal(9, "RdYlBu")[1:5])(100)), magmap=FALSE, scale="linear")
       fields::image.plot(legend.only = TRUE, zlim = range(c(fl()$dispersion_img)), col = rev(colorRampPalette(RColorBrewer::brewer.pal(9, "RdYlBu")[1:5])(100)), horizontal = TRUE, family="sans", font=2, legend.lab = expression("dispersion"[LOS] * ", km s"^{-1}), cex.lab=2)
-      lines(reff_ellipse[,1], reff_ellipse[,2], col = "red", lwd = 5)
-
+      plotrix::draw.ellipse(x = xcen, y = ycen, a = axis_data$a_kpc / sbinsize, b = axis_data$b_kpc / sbinsize, angle = axis_data$angle - 90, border="red", lwd = 5, deg=TRUE)
+      
     })
   }, height=reactive(ifelse(!is.null(input$innerWidth),input$innerWidth*3/5,0)))
   # plotting the dispersion images
