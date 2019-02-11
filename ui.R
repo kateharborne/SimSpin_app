@@ -14,7 +14,7 @@ library(snapshot)
 library(shinycssloaders)
 
 
-options(shiny.maxRequestSize = 30*1024^2)
+options(shiny.maxRequestSize = 100*1024^2)
 
 # Define UI for application that draws a histogram
 shinyUI(navbarPage(
