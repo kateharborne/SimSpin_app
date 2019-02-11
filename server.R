@@ -4,8 +4,28 @@ library(SimSpin)
 library(snapshot)
 
 shinyServer(function(input, output, session) {
+  
+  output$download_title <- renderUI({
+    HTML(paste("SimSpin example simulation file <br />"))
+  })
 
+  output$download_specs <- renderUI({
+    HTML(paste("If you would like to run this application with the default example file, you can download it here: <br /><br />"))
+    
+  })
+  
+  output$SimSpin_example <- downloadHandler(
+    filename <- function() {
+      paste("www/SimSpin_example", "hdf5", sep = ".")
+    },
+    content <- function(file) {
+      file.copy("SimSpin_example.hdf5", file)
+    },
+    contentType = "application/hdf5"
+  )
+  
   # sim_analysis() tab ----------------------------------------------------------------------------
+  
   df <- reactive({
     if (input$DM_profile == "Hernquist"){
       galaxy_file = SimSpin::sim_data(filename = input$sim_file$datapath,

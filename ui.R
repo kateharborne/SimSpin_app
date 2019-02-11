@@ -13,6 +13,8 @@ library(SimSpin)
 library(snapshot)
 library(shinycssloaders)
 
+tags$head(tags$link(rel="shortcut icon", href="favicon.ico"),
+          tags$link(rel="apple-touch-icon", href="apple_icon.png", sizes="158x158"))
 
 options(shiny.maxRequestSize = 100*1024^2)
 
@@ -203,5 +205,10 @@ shinyUI(navbarPage(
                )
              )
            )
+  ),
+  tabPanel("download",
+           h3(htmlOutput("download_title")),
+           htmlOutput("download_specs"),
+           downloadButton("SimSpin_example", "Download SimSpin_example.hdf5")
   )
 ))
