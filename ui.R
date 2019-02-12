@@ -30,7 +30,8 @@ shinyUI(navbarPage(
            # Sidebar with a file input for simulation to be analysed
            sidebarLayout(
              sidebarPanel(
-               fileInput("sim_file", label = "Simulation File:", multiple = FALSE, buttonLabel = "Browse...",
+               checkboxInput("example_file", label = "Use SimSpin example file?", value=TRUE),
+               fileInput("sim_file", label = "Or upload simulation file:", multiple = FALSE, buttonLabel = "Browse...",
                          placeholder = "No file selected"),
                checkboxGroupInput("ptype", label = "Particle types:",
                                   choiceNames = c("Dark Matter", "Disc", "Bulge"),
@@ -87,7 +88,8 @@ shinyUI(navbarPage(
                                      Shiny.onInputChange("innerWidth", window.innerWidth);
                                      });
                                      ')),
-               fileInput("sim_file_2", label = "Simulation File:", multiple = FALSE, buttonLabel = "Browse...",
+               checkboxInput("example_file_2", label = "Use SimSpin example file?", value=TRUE),
+               fileInput("sim_file_2", label = "Or upload simulation file:", multiple = FALSE, buttonLabel = "Browse...",
                          placeholder = "No file selected"),
                checkboxGroupInput("ptype_2", label = "Particle types:",
                                   choiceNames = c("Dark Matter", "Disc", "Bulge"),
@@ -136,7 +138,8 @@ shinyUI(navbarPage(
                                      Shiny.onInputChange("innerWidth", window.innerWidth);
                                      });
                                      ')),
-               fileInput("sim_file_3", label = "Simulation File:", multiple = FALSE, buttonLabel = "Browse...",
+               checkboxInput("example_file_3", label = "Use SimSpin example file?", value=TRUE),
+               fileInput("sim_file_3", label = "Or upload simulation file:", multiple = FALSE, buttonLabel = "Browse...",
                          placeholder = "No file selected"),
                checkboxGroupInput("ptype_3", label = "Particle types:",
                                   choiceNames = c("Dark Matter", "Disc", "Bulge"),
@@ -205,10 +208,5 @@ shinyUI(navbarPage(
                )
              )
            )
-  ),
-  tabPanel("download",
-           h3(htmlOutput("download_title")),
-           htmlOutput("download_specs"),
-           downloadButton("SimSpin_example", "Download SimSpin_example.hdf5")
   )
 ))
