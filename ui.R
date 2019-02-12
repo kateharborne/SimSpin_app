@@ -10,23 +10,23 @@
 library(shiny)
 library(shinythemes)
 library(SimSpin)
-library(snapshot)
 library(shinycssloaders)
-
-tags$head(tags$link(rel="shortcut icon", href="favicon.ico"),
-          tags$link(rel="apple-touch-icon", href="apple_icon.png", sizes="158x158"))
+library(plot3D)
 
 options(shiny.maxRequestSize = 100*1024^2)
 
-# Define UI for application that draws a histogram
-shinyUI(navbarPage(
-
-  theme = shinytheme("simplex"),
-  # Application title
-  title = "SimSpin",
-  # sim_analysis panel
-  tabPanel("sim_analysis",
-
+shinyUI(
+  fluidPage(
+    titlePanel('', windowTitle = 'SimSpin'),
+    tags$head(tags$link(rel="shortcut icon", href="favicon.ico"),
+              tags$link(rel="apple-touch-icon", href="apple_icon.png", sizes="158x158")              
+    ),
+    tags$style(type="text/css", "body { overflow-y: scroll; }"),
+    div(class = " titleContainer", img(src="simspin.gif",class="headerImage",style="width:100%")),
+    div(class="row marginRow"),
+    div (id="navAlign",
+    navbarPage(" ", theme = shinytheme("simplex"), fluid = TRUE, collapsible = TRUE,
+      tabPanel("sim_analysis",
            # Sidebar with a file input for simulation to be analysed
            sidebarLayout(
              sidebarPanel(
@@ -78,7 +78,7 @@ shinyUI(navbarPage(
               ))
           )
         ),
-  tabPanel("build_datacube",
+    tabPanel("build_datacube",
            sidebarLayout(
              sidebarPanel(
                tags$head(tags$script('$(document).on("shiny:connected", function(e) {
@@ -92,8 +92,8 @@ shinyUI(navbarPage(
                fileInput("sim_file_2", label = "Or upload simulation file:", multiple = FALSE, buttonLabel = "Browse...",
                          placeholder = "No file selected"),
                checkboxGroupInput("ptype_2", label = "Particle types:",
-                                  choiceNames = c("Dark Matter", "Disc", "Bulge"),
-                                  choiceValues = c(1, 2, 3), selected = c(2,3)),
+                                  choiceNames = c("Disc", "Bulge"),
+                                  choiceValues = c(2, 3), selected = c(2,3)),
                numericInput("r200", label = "Virial radius:", value = 200),
                sliderInput("z", label = "Redshift:", min = 0.01, max = 0.1, value = 0.06),
                selectInput("survey", label = "Survey:", choices = c("SAMI", "MaNGA", "CALIFA", "Specified")),
@@ -128,7 +128,7 @@ shinyUI(navbarPage(
              )
             )
            ),
-  tabPanel("find_lambda",
+    tabPanel("find_lambda",
            sidebarLayout(
              sidebarPanel(
                tags$head(tags$script('$(document).on("shiny:connected", function(e) {
@@ -142,8 +142,8 @@ shinyUI(navbarPage(
                fileInput("sim_file_3", label = "Or upload simulation file:", multiple = FALSE, buttonLabel = "Browse...",
                          placeholder = "No file selected"),
                checkboxGroupInput("ptype_3", label = "Particle types:",
-                                  choiceNames = c("Dark Matter", "Disc", "Bulge"),
-                                  choiceValues = c(1, 2, 3), selected = c(2,3)),
+                                  choiceNames = c("Disc", "Bulge"),
+                                  choiceValues = c(2, 3), selected = c(2,3)),
                numericInput("r200_2", label = "Virial radius:", value = 200),
                sliderInput("z_2", label = "Redshift:", min = 0.01, max = 0.1, value = 0.06),
                selectInput("survey_2", label = "Survey:", choices = c("SAMI", "MaNGA", "CALIFA", "Specified")),
@@ -208,5 +208,6 @@ shinyUI(navbarPage(
                )
              )
            )
+    ))
   )
 ))

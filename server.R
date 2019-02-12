@@ -1,61 +1,83 @@
 
 library(shiny)
 library(SimSpin)
-library(snapshot)
+library(plot3D)
 
 shinyServer(function(input, output, session) {
   
   # sim_analysis() tab ----------------------------------------------------------------------------
   
   df <- reactive({
-    if (input$DM_profile == "Hernquist"){
-      if (input$example_file == TRUE){
-        galaxy_file = SimSpin::sim_data(filename = system.file("extdata", 'SimSpin_example.hdf5', package="SimSpin"),
-                                        ptype = input$ptype)
-      } else if (input$example_file == FALSE){
-        galaxy_file = SimSpin::sim_data(filename = input$sim_file$datapath,
-                                        ptype = input$ptype) 
-      }
-      SimSpin::sim_analysis(simdata = galaxy_file,
-                            bin_type = input$bin_type,
-                            rmax = input$rmax,
-                            rbin = input$rbin,
-                            DM_profile = list("profile" = "Hernquist", "DM_mass" = input$DM_mass, "DM_a" = input$DM_a))
-    } else if (input$DM_profile == "NFW"){
-      if (input$example_file == TRUE){
-        galaxy_file = SimSpin::sim_data(filename = system.file("extdata", 'SimSpin_example.hdf5', package="SimSpin"),
-                                        ptype = input$ptype)
-      } else if (input$example_file == FALSE){
-        galaxy_file = SimSpin::sim_data(filename = input$sim_file$datapath,
-                                        ptype = input$ptype) 
-      }
-      SimSpin::sim_analysis(simdata = galaxy_file,
-                            bin_type = input$bin_type,
-                            rmax = input$rmax,
-                            rbin = input$rbin,
-                            DM_profile = list("profile"="NFW", "DM_vm" = input$DM_vm, "DM_a" = input$DM_a, "DM_rhof" = input$DM_rhof))
-    } else if (input$DM_profile == "None") {
-      if (input$example_file == TRUE){
-        galaxy_file = SimSpin::sim_data(filename = system.file("extdata", 'SimSpin_example.hdf5', package="SimSpin"),
-                                        ptype = input$ptype)
-      } else if (input$example_file == FALSE){
-        galaxy_file = SimSpin::sim_data(filename = input$sim_file$datapath,
-                                        ptype = input$ptype) 
-      }
+    if (input$example_file == TRUE){
       validate(
-        need(try(SimSpin::sim_analysis(simdata = galaxy_file,
-                                       bin_type = input$bin_type,
-                                       rmax = input$rmax,
-                                       rbin = input$rbin,
-                                       DM_profile = NA)), "DMpart Error: There are no dark matter particles in this model. Describe an analytic potential to calculate the total kinematic profile correctly.")
+        need(try(SimSpin::sim_data(filename = system.file("extdata", 'SimSpin_example.hdf5', package="SimSpin"),
+                                   ptype = input$ptype)), "NPart Error: Some requested particle types are missing from this simulation.")
       )
-      SimSpin::sim_analysis(simdata = galaxy_file,
-                            bin_type = input$bin_type,
-                            rmax = input$rmax,
-                            rbin = input$rbin,
-                            DM_profile = NA)
-
+      galaxy_file = SimSpin::sim_data(filename = system.file("extdata", 'SimSpin_example.hdf5', package="SimSpin"),
+                                      ptype = input$ptype)
+      if (input$DM_profile == "Hernquist"){
+        SimSpin::sim_analysis(simdata = galaxy_file,
+                              bin_type = input$bin_type,
+                              rmax = input$rmax,
+                              rbin = input$rbin,
+                              DM_profile = list("profile" = "Hernquist", "DM_mass" = input$DM_mass, "DM_a" = input$DM_a))
+      } else if (input$DM_profile == "NFW"){
+        SimSpin::sim_analysis(simdata = galaxy_file,
+                              bin_type = input$bin_type,
+                              rmax = input$rmax,
+                              rbin = input$rbin,
+                              DM_profile = list("profile"="NFW", "DM_vm" = input$DM_vm, "DM_a" = input$DM_a, "DM_rhof" = input$DM_rhof))
+      } else if (input$DM_profile == "None") {
+        validate(
+          need(try(SimSpin::sim_analysis(simdata = galaxy_file,
+                                         bin_type = input$bin_type,
+                                         rmax = input$rmax,
+                                         rbin = input$rbin,
+                                         DM_profile = NA)), "DMpart Error: There are no dark matter particles in this model. Describe an analytic potential to calculate the total kinematic profile correctly.")
+        )
+        SimSpin::sim_analysis(simdata = galaxy_file,
+                              bin_type = input$bin_type,
+                              rmax = input$rmax,
+                              rbin = input$rbin,
+                              DM_profile = NA)
+        
+      }
+    } else if (input$example_file == FALSE){
+      validate(
+        need(try(SimSpin::sim_data(filename = input$sim_file$datapath,
+                                   ptype = input$ptype)), "NPart Error: Some requested particle types are missing from this simulation.")
+      )
+      galaxy_file = SimSpin::sim_data(filename = input$sim_file$datapath,
+                                      ptype = input$ptype) 
+      if (input$DM_profile == "Hernquist"){
+        SimSpin::sim_analysis(simdata = galaxy_file,
+                              bin_type = input$bin_type,
+                              rmax = input$rmax,
+                              rbin = input$rbin,
+                              DM_profile = list("profile" = "Hernquist", "DM_mass" = input$DM_mass, "DM_a" = input$DM_a))
+      } else if (input$DM_profile == "NFW"){
+        SimSpin::sim_analysis(simdata = galaxy_file,
+                              bin_type = input$bin_type,
+                              rmax = input$rmax,
+                              rbin = input$rbin,
+                              DM_profile = list("profile"="NFW", "DM_vm" = input$DM_vm, "DM_a" = input$DM_a, "DM_rhof" = input$DM_rhof))
+      } else if (input$DM_profile == "None") {
+        validate(
+          need(try(SimSpin::sim_analysis(simdata = galaxy_file,
+                                         bin_type = input$bin_type,
+                                         rmax = input$rmax,
+                                         rbin = input$rbin,
+                                         DM_profile = NA)), "DMpart Error: There are no dark matter particles in this model. Describe an analytic potential to calculate the total kinematic profile correctly.")
+        )
+        SimSpin::sim_analysis(simdata = galaxy_file,
+                              bin_type = input$bin_type,
+                              rmax = input$rmax,
+                              rbin = input$rbin,
+                              DM_profile = NA)
+        
+      }
     }
+    
   }) # running SimSpin::sim_analysis() outside the output generation to be accessed by each
 
   pal <- reactive({
@@ -106,9 +128,17 @@ shinyServer(function(input, output, session) {
     }
     isolate({
       if (input$example_file == TRUE){
+        validate(
+          need(try(SimSpin::sim_data(filename = system.file("extdata", 'SimSpin_example.hdf5', package="SimSpin"),
+                                     ptype = input$ptype)), "NPart Error: Some requested particle types are missing from this simulation.")
+        )
         galaxy_file = SimSpin::sim_data(filename = system.file("extdata", 'SimSpin_example.hdf5', package="SimSpin"),
                                         ptype = input$ptype)
       } else if (input$example_file == FALSE){
+        validate(
+          need(try(SimSpin::sim_data(filename = input$sim_file$datapath,
+                                     ptype = input$ptype)), "NPart Error: Some requested particle types are missing from this simulation.")
+        )
         galaxy_file = SimSpin::sim_data(filename = input$sim_file$datapath,
                                         ptype = input$ptype) 
       }
