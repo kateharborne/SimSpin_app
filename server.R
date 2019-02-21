@@ -302,7 +302,7 @@ shinyServer(function(input, output, session) {
                                           m2l_bulge = input$m2l_bulge)
         }
         SimSpin::build_datacube(simdata = galaxy_file,
-                                r200 = input$r200,
+                                #r200 = input$r200,
                                 z = input$z,
                                 fov = 15,
                                 ap_shape = "circular",
@@ -325,7 +325,7 @@ shinyServer(function(input, output, session) {
                                           m2l_bulge = input$m2l_bulge)
         }
         SimSpin::build_datacube(simdata = galaxy_file,
-                                r200 = input$r200,
+                                #r200 = input$r200,
                                 z = input$z,
                                 fov = 22,
                                 ap_shape = "hexagonal",
@@ -348,7 +348,7 @@ shinyServer(function(input, output, session) {
                                           m2l_bulge = input$m2l_bulge)
         }
         SimSpin::build_datacube(simdata = galaxy_file,
-                                r200 = input$r200,
+                                #r200 = input$r200,
                                 z = input$z,
                                 fov = 30,
                                 ap_shape = "hexagonal",
@@ -358,6 +358,29 @@ shinyServer(function(input, output, session) {
                                 pixel_vscale = 2,
                                 inc_deg = input$inc_deg,
                                 threshold = 25)
+      } else if (input$survey == "Hector"){
+        if (input$example_file_2 == TRUE){
+          galaxy_file = SimSpin::sim_data(filename = system.file("extdata", 'SimSpin_example.hdf5', package="SimSpin"),
+                                          ptype    = input$ptype_2,
+                                          m2l_disc  = input$m2l_disc,
+                                          m2l_bulge = input$m2l_bulge)
+        } else if (input$example_file_2 == FALSE){
+          galaxy_file = SimSpin::sim_data(filename  = input$sim_file_2$datapath,
+                                          ptype     = input$ptype_2,
+                                          m2l_disc  = input$m2l_disc,
+                                          m2l_bulge = input$m2l_bulge)
+        }
+        SimSpin::build_datacube(simdata = galaxy_file,
+                                #r200 = input$r200,
+                                z = input$z,
+                                fov = 30,
+                                ap_shape = "hexagonal",
+                                central_wvl = 4800,
+                                lsf_fwhm = 1.3,
+                                pixel_sscale = 1.6,
+                                pixel_vscale = 0.05,
+                                inc_deg = input$inc_deg,
+                                threshold = 30)
       } else if (input$survey == "Specified"){
         if (input$example_file_2 == TRUE){
           galaxy_file = SimSpin::sim_data(filename = system.file("extdata", 'SimSpin_example.hdf5', package="SimSpin"),
@@ -371,7 +394,7 @@ shinyServer(function(input, output, session) {
                                           m2l_bulge = input$m2l_bulge)
         }
         SimSpin::build_datacube(simdata = galaxy_file,
-                                r200 = input$r200,
+                                #r200 = input$r200,
                                 z = input$z,
                                 fov = input$fov,
                                 ap_shape = input$ap_shape,
@@ -398,7 +421,7 @@ shinyServer(function(input, output, session) {
                                           m2l_bulge = input$m2l_bulge)
         }
         SimSpin::build_datacube(simdata = galaxy_file,
-                                r200 = input$r200,
+                                #r200 = input$r200,
                                 z = input$z,
                                 fov = 15,
                                 ap_shape = "circular",
@@ -422,7 +445,7 @@ shinyServer(function(input, output, session) {
                                           m2l_bulge = input$m2l_bulge)
         }
         SimSpin::build_datacube(simdata = galaxy_file,
-                                r200 = input$r200,
+                                #r200 = input$r200,
                                 z = input$z,
                                 fov = 22,
                                 ap_shape = "hexagonal",
@@ -448,7 +471,7 @@ shinyServer(function(input, output, session) {
                                           m2l_bulge = input$m2l_bulge)
         }
         SimSpin::build_datacube(simdata = galaxy_file,
-                                r200 = input$r200,
+                                #r200 = input$r200,
                                 z = input$z,
                                 fov = 30,
                                 ap_shape = "hexagonal",
@@ -460,6 +483,30 @@ shinyServer(function(input, output, session) {
                                 m2l_disc = input$m2l_disc,
                                 m2l_bulge = input$m2l_bulge,
                                 threshold = 25,
+                                blur = list("psf" = input$psf, "fwhm" = input$fwhm))
+      } else if (input$survey == "Hector"){
+        if (input$example_file_2 == TRUE){
+          galaxy_file = SimSpin::sim_data(filename = system.file("extdata", 'SimSpin_example.hdf5', package="SimSpin"),
+                                          ptype    = input$ptype_2,
+                                          m2l_disc  = input$m2l_disc,
+                                          m2l_bulge = input$m2l_bulge)
+        } else if (input$example_file_2 == FALSE){
+          galaxy_file = SimSpin::sim_data(filename  = input$sim_file_2$datapath,
+                                          ptype     = input$ptype_2,
+                                          m2l_disc  = input$m2l_disc,
+                                          m2l_bulge = input$m2l_bulge)
+        }
+        SimSpin::build_datacube(simdata = galaxy_file,
+                                #r200 = input$r200,
+                                z = input$z,
+                                fov = 30,
+                                ap_shape = "hexagonal",
+                                central_wvl = 4800,
+                                lsf_fwhm = 1.3,
+                                pixel_sscale = 1.6,
+                                pixel_vscale = 0.05,
+                                inc_deg = input$inc_deg,
+                                threshold = 30,
                                 blur = list("psf" = input$psf, "fwhm" = input$fwhm))
       } else if (input$survey == "Specified"){
         if (input$example_file_2 == TRUE){
@@ -474,7 +521,7 @@ shinyServer(function(input, output, session) {
                                           m2l_bulge = input$m2l_bulge)
         }
         SimSpin::build_datacube(simdata = galaxy_file,
-                                r200 = input$r200,
+                                #r200 = input$r200,
                                 z = input$z,
                                 fov = input$fov,
                                 ap_shape = input$ap_shape,
@@ -582,7 +629,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = 15,
                            ap_shape = "circular",
@@ -607,7 +654,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = 22,
                            ap_shape = "hexagonal",
@@ -632,7 +679,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = 30,
                            ap_shape = "hexagonal",
@@ -642,6 +689,31 @@ shinyServer(function(input, output, session) {
                            pixel_vscale = 2,
                            inc_deg = input$inc_deg_2,
                            threshold = 25,
+                           measure_type = list("type"="fit", "fac"=input$fac),
+                           IFU_plot = FALSE)
+    } else if (input$blur_2 == "FALSE" && input$measure_type == "Fit" && input$survey_2 == "Hector"){
+      if (input$example_file_3 == TRUE){
+        galaxy_file = SimSpin::sim_data(filename = system.file("extdata", 'SimSpin_example.hdf5', package="SimSpin"),
+                                        ptype    = input$ptype_3,
+                                        m2l_disc  = input$m2l_disc_2,
+                                        m2l_bulge = input$m2l_bulge_2)
+      } else if (input$example_file_3 == FALSE){
+        galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                        ptype = input$ptype_3,
+                                        m2l_disc = input$m2l_disc_2,
+                                        m2l_bulge = input$m2l_bulge_2)
+      }
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           #r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 30,
+                           ap_shape = "hexagonal",
+                           central_wvl = 4800,
+                           lsf_fwhm = 1.3,
+                           pixel_sscale = 1.6,
+                           pixel_vscale = 0.05,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 30,
                            measure_type = list("type"="fit", "fac"=input$fac),
                            IFU_plot = FALSE)
     } else if (input$blur_2 == "FALSE" && input$measure_type == "Fit" && input$survey_2 == "Specified"){
@@ -657,7 +729,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = input$fov_2,
                            ap_shape = input$ap_shape_2,
@@ -683,7 +755,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = 15,
                            ap_shape = "circular",
@@ -710,7 +782,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = 22,
                            ap_shape = "hexagonal",
@@ -737,7 +809,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = 30,
                            ap_shape = "hexagonal",
@@ -747,6 +819,33 @@ shinyServer(function(input, output, session) {
                            pixel_vscale = 2,
                            inc_deg = input$inc_deg_2,
                            threshold = 25,
+                           measure_type = list("type"="specified",
+                                               "fract"=input$fract,
+                                               "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
+                           IFU_plot = FALSE)
+    } else if (input$blur_2 == "FALSE" && input$measure_type == "Specified" && input$survey_2 == "Hector"){
+      if (input$example_file_3 == TRUE){
+        galaxy_file = SimSpin::sim_data(filename = system.file("extdata", 'SimSpin_example.hdf5', package="SimSpin"),
+                                        ptype    = input$ptype_3,
+                                        m2l_disc  = input$m2l_disc_2,
+                                        m2l_bulge = input$m2l_bulge_2)
+      } else if (input$example_file_3 == FALSE){
+        galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                        ptype = input$ptype_3,
+                                        m2l_disc = input$m2l_disc_2,
+                                        m2l_bulge = input$m2l_bulge_2)
+      }
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           #r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 30,
+                           ap_shape = "hexagonal",
+                           central_wvl = 4800,
+                           lsf_fwhm = 1.3,
+                           pixel_sscale = 1.6,
+                           pixel_vscale = 0.05,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 30,
                            measure_type = list("type"="specified",
                                                "fract"=input$fract,
                                                "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
@@ -764,7 +863,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = input$fov_2,
                            ap_shape = input$ap_shape_2,
@@ -792,7 +891,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
      SimSpin::find_lambda(simdata = galaxy_file,
-                          r200 = input$r200_2,
+                          #r200 = input$r200_2,
                           z = input$z_2,
                           fov = 15,
                           ap_shape = "circular",
@@ -819,7 +918,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = 22,
                            ap_shape = "hexagonal",
@@ -846,7 +945,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = 30,
                            ap_shape = "hexagonal",
@@ -856,6 +955,33 @@ shinyServer(function(input, output, session) {
                            pixel_vscale = 2,
                            inc_deg = input$inc_deg_2,
                            threshold = 25,
+                           measure_type = list("type"="fixed",
+                                               "fac"=input$fac,
+                                               "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
+                           IFU_plot = FALSE)
+    } else if (input$blur_2 == "FALSE" && input$measure_type == "Fixed" && input$survey_2 == "Hector"){
+      if (input$example_file_3 == TRUE){
+        galaxy_file = SimSpin::sim_data(filename = system.file("extdata", 'SimSpin_example.hdf5', package="SimSpin"),
+                                        ptype    = input$ptype_3,
+                                        m2l_disc  = input$m2l_disc_2,
+                                        m2l_bulge = input$m2l_bulge_2)
+      } else if (input$example_file_3 == FALSE){
+        galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                        ptype = input$ptype_3,
+                                        m2l_disc = input$m2l_disc_2,
+                                        m2l_bulge = input$m2l_bulge_2)
+      }
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           #r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 30,
+                           ap_shape = "hexagonal",
+                           central_wvl = 4800,
+                           lsf_fwhm = 1.3,
+                           pixel_sscale = 1.6,
+                           pixel_vscale = 0.05,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 30,
                            measure_type = list("type"="fixed",
                                                "fac"=input$fac,
                                                "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
@@ -873,7 +999,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = input$fov_2,
                            ap_shape = input$ap_shape_2,
@@ -901,7 +1027,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = 15,
                            ap_shape = "circular",
@@ -927,7 +1053,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = 22,
                            ap_shape = "hexagonal",
@@ -953,7 +1079,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = 30,
                            ap_shape = "hexagonal",
@@ -963,6 +1089,32 @@ shinyServer(function(input, output, session) {
                            pixel_vscale = 2,
                            inc_deg = input$inc_deg_2,
                            threshold = 25,
+                           measure_type = list("type"="fit", "fac"=input$fac),
+                           blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
+                           IFU_plot = FALSE)
+    } else if (input$blur_2 == "TRUE" && input$measure_type == "Fit" && input$survey_2 == "Hector"){
+      if (input$example_file_3 == TRUE){
+        galaxy_file = SimSpin::sim_data(filename = system.file("extdata", 'SimSpin_example.hdf5', package="SimSpin"),
+                                        ptype    = input$ptype_3,
+                                        m2l_disc  = input$m2l_disc_2,
+                                        m2l_bulge = input$m2l_bulge_2)
+      } else if (input$example_file_3 == FALSE){
+        galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                        ptype = input$ptype_3,
+                                        m2l_disc = input$m2l_disc_2,
+                                        m2l_bulge = input$m2l_bulge_2)
+      }
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           #r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 30,
+                           ap_shape = "hexagonal",
+                           central_wvl = 4800,
+                           lsf_fwhm = 1.3,
+                           pixel_sscale = 1.6,
+                           pixel_vscale = 0.05,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 30,
                            measure_type = list("type"="fit", "fac"=input$fac),
                            blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
                            IFU_plot = FALSE)
@@ -979,7 +1131,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = input$fov_2,
                            ap_shape = input$ap_shape_2,
@@ -1006,7 +1158,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = 15,
                            ap_shape = "circular",
@@ -1034,7 +1186,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = 22,
                            ap_shape = "hexagonal",
@@ -1062,7 +1214,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = 30,
                            ap_shape = "hexagonal",
@@ -1072,6 +1224,34 @@ shinyServer(function(input, output, session) {
                            pixel_vscale = 2,
                            inc_deg = input$inc_deg_2,
                            threshold = 25,
+                           measure_type = list("type"="specified",
+                                               "fract"=input$fract,
+                                               "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
+                           blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
+                           IFU_plot = FALSE)
+    } else if (input$blur_2 == "TRUE" && input$measure_type == "Specified" && input$survey_2 == "Hector"){
+      if (input$example_file_3 == TRUE){
+        galaxy_file = SimSpin::sim_data(filename = system.file("extdata", 'SimSpin_example.hdf5', package="SimSpin"),
+                                        ptype    = input$ptype_3,
+                                        m2l_disc  = input$m2l_disc_2,
+                                        m2l_bulge = input$m2l_bulge_2)
+      } else if (input$example_file_3 == FALSE){
+        galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                        ptype = input$ptype_3,
+                                        m2l_disc = input$m2l_disc_2,
+                                        m2l_bulge = input$m2l_bulge_2)
+      }
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           #r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 30,
+                           ap_shape = "hexagonal",
+                           central_wvl = 4800,
+                           lsf_fwhm = 1.3,
+                           pixel_sscale = 1.6,
+                           pixel_vscale = 0.05,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 30,
                            measure_type = list("type"="specified",
                                                "fract"=input$fract,
                                                "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
@@ -1090,7 +1270,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = input$fov_2,
                            ap_shape = input$ap_shape_2,
@@ -1119,7 +1299,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = 15,
                            ap_shape = "circular",
@@ -1147,7 +1327,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = 22,
                            ap_shape = "hexagonal",
@@ -1175,7 +1355,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = 30,
                            ap_shape = "hexagonal",
@@ -1185,6 +1365,34 @@ shinyServer(function(input, output, session) {
                            pixel_vscale = 2,
                            inc_deg = input$inc_deg_2,
                            threshold = 25,
+                           measure_type = list("type"="fixed",
+                                               "fac"=input$fac,
+                                               "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
+                           blur = list("psf"=input$psf_2, "fwhm"=input$fwhm_2),
+                           IFU_plot = FALSE)
+    } else if (input$blur_2 == "TRUE" && input$measure_type == "Fixed" && input$survey_2 == "Hector"){
+      if (input$example_file_3 == TRUE){
+        galaxy_file = SimSpin::sim_data(filename = system.file("extdata", 'SimSpin_example.hdf5', package="SimSpin"),
+                                        ptype    = input$ptype_3,
+                                        m2l_disc  = input$m2l_disc_2,
+                                        m2l_bulge = input$m2l_bulge_2)
+      } else if (input$example_file_3 == FALSE){
+        galaxy_file = SimSpin::sim_data(filename = input$sim_file_3$datapath,
+                                        ptype = input$ptype_3,
+                                        m2l_disc = input$m2l_disc_2,
+                                        m2l_bulge = input$m2l_bulge_2)
+      }
+      SimSpin::find_lambda(simdata = galaxy_file,
+                           #r200 = input$r200_2,
+                           z = input$z_2,
+                           fov = 30,
+                           ap_shape = "hexagonal",
+                           central_wvl = 4800,
+                           lsf_fwhm = 1.3,
+                           pixel_sscale = 1.6,
+                           pixel_vscale = 0.05,
+                           inc_deg = input$inc_deg_2,
+                           threshold = 30,
                            measure_type = list("type"="fixed",
                                                "fac"=input$fac,
                                                "axis_ratio"=data.frame("a"=input$ar_a, "b"=input$ar_b)),
@@ -1203,7 +1411,7 @@ shinyServer(function(input, output, session) {
                                         m2l_bulge = input$m2l_bulge_2)
       }
       SimSpin::find_lambda(simdata = galaxy_file,
-                           r200 = input$r200_2,
+                           #r200 = input$r200_2,
                            z = input$z_2,
                            fov = input$fov_2,
                            ap_shape = input$ap_shape_2,
@@ -1336,6 +1544,26 @@ shinyServer(function(input, output, session) {
   }, sanitize.colnames.function = function(x) x) # kinematics table
 
 
+  # contact tab -----------------------------------------------------------------------------
+  output$contact_info_header <- renderUI({
+    contact_header = "Contact us"
+    HTML(paste("", contact_header, "", sep="<br/>"))
+  }) 
+  
+  output$contact_info_1 <- renderUI({
+    contact_1 = "SimSpin was created and maintained by Kate Harborne (ICRAR PhD Student, 2019)."
+    contact_2 = "If you find any inaccuracies or bugs, please contact us below: <br />"
+    HTML(paste("", contact_1, contact_2, "", sep="<br/>"))
+  }) 
+  
+  output$contact_info_2 <- renderUI({
+    contact_3 = "For further information, code and examples, check out the following links: <br />"
+    url_1 <- a("SimSpin", href="https://github.com/kateharborne/SimSpin")
+    url_2 <- a("SimSpin Examples", href="http://rpubs.com/kateharborne")
+    url_3 <- a("SimSpin Publications", href="https://ui.adsabs.harvard.edu/#abs/arXiv:1811.06148")
+    HTML(paste("", contact_3, url_1, url_2, url_3, "", sep="<br/>"))
+  }) 
+  
 })
 
 

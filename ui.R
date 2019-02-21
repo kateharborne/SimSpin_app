@@ -26,7 +26,7 @@ shinyUI(
     div(class="row marginRow"),
     div (id="navAlign",
     navbarPage(" ", theme = shinytheme("simplex"), fluid = TRUE, collapsible = TRUE,
-      tabPanel("sim_analysis",
+      tabPanel("Analyse",
            # Sidebar with a file input for simulation to be analysed
            sidebarLayout(
              sidebarPanel(
@@ -78,7 +78,7 @@ shinyUI(
               ))
           )
         ),
-    tabPanel("build_datacube",
+    tabPanel("Cube",
            sidebarLayout(
              sidebarPanel(
                tags$head(tags$script('$(document).on("shiny:connected", function(e) {
@@ -94,9 +94,9 @@ shinyUI(
                checkboxGroupInput("ptype_2", label = "Particle types:",
                                   choiceNames = c("Disc", "Bulge"),
                                   choiceValues = c(2, 3), selected = c(2,3)),
-               numericInput("r200", label = "Virial radius:", value = 200),
+               #numericInput("r200", label = "Virial radius:", value = 200),
                sliderInput("z", label = "Redshift:", min = 0.01, max = 0.1, value = 0.06),
-               selectInput("survey", label = "Survey:", choices = c("SAMI", "MaNGA", "CALIFA", "Specified")),
+               selectInput("survey", label = "Survey:", choices = c("SAMI", "MaNGA", "CALIFA", "Hector", "Specified")),
                # only show this panel if survey == "Specified"
                conditionalPanel(
                  condition = "input.survey == 'Specified'",
@@ -128,7 +128,7 @@ shinyUI(
              )
             )
            ),
-    tabPanel("find_lambda",
+    tabPanel("Observe",
            sidebarLayout(
              sidebarPanel(
                tags$head(tags$script('$(document).on("shiny:connected", function(e) {
@@ -144,9 +144,9 @@ shinyUI(
                checkboxGroupInput("ptype_3", label = "Particle types:",
                                   choiceNames = c("Disc", "Bulge"),
                                   choiceValues = c(2, 3), selected = c(2,3)),
-               numericInput("r200_2", label = "Virial radius:", value = 200),
+               #numericInput("r200_2", label = "Virial radius:", value = 200),
                sliderInput("z_2", label = "Redshift:", min = 0.01, max = 0.1, value = 0.06),
-               selectInput("survey_2", label = "Survey:", choices = c("SAMI", "MaNGA", "CALIFA", "Specified")),
+               selectInput("survey_2", label = "Survey:", choices = c("SAMI", "MaNGA", "CALIFA", "Hector", "Specified")),
                # only show this panel if survey == "Specified"
                conditionalPanel(
                  condition = "input.survey_2 == 'Specified'",
@@ -208,6 +208,14 @@ shinyUI(
                )
              )
            )
-    ))
-  )
-))
+    ),
+    tabPanel("Contact",
+             h3(htmlOutput("contact_info_header")),
+             htmlOutput("contact_info_1"),
+             a(actionButton(inputId = "email1", label = "Contact Admin", 
+                            icon = icon("envelope", lib = "font-awesome")),
+               href="mailto:katherine.harborne@icrar.org?subject=SimSpin Web-app Issue"),
+             htmlOutput("contact_info_2"))
+    )
+  ))
+)
